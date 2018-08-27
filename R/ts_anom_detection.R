@@ -322,7 +322,7 @@ AnomalyDetectionTs <- function(x, max_anoms = 0.10, direction = 'pos',
       xgraph <- ggplot2::ggplot(x, ggplot2::aes_string(x="timestamp", y="count")) + ggplot2::theme_bw() + ggplot2::theme(panel.grid.major = ggplot2::element_line(colour = "gray60"), panel.grid.major.y = ggplot2::element_blank(), panel.grid.minor = ggplot2::element_blank(), text=ggplot2::element_text(size = 14))
       xgraph <- xgraph + ggplot2::geom_line(data=x, ggplot2::aes_string(colour=color_name), alpha=alpha)
       yrange <- get_range(x, index=2, y_log=y_log)
-      xgraph <- xgraph + ggplot2::scale_x_datetime(labels=function(x) ifelse(as.POSIXct(x, tz="UTC")$hour != 0,strftime(x, format="%kh", tz="UTC"), strftime(x, format="%b %e", tz="UTC")),
+      xgraph <- xgraph + ggplot2::scale_x_datetime(labels=function(x) ifelse(as.POSIXct(x, tz="UTC")['hour'] != 0,strftime(x, format="%kh", tz="UTC"), strftime(x, format="%b %e", tz="UTC")),
                                                   expand=c(0,0))
       xgraph <- xgraph + ggplot2::labs(x=xlabel, y=ylabel, title=plot_title)
     }
@@ -357,7 +357,7 @@ AnomalyDetectionTs <- function(x, max_anoms = 0.10, direction = 'pos',
 
   # Lastly, return anoms and optionally the plot if requested by the user
   if(plot){
-    return (xgraph)
+    return (list(anoms = anoms, plot = xgraph))
   } else {
     return (list(anoms = anoms, plot = plot.new()))
   }
