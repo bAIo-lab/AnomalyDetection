@@ -74,7 +74,7 @@ AnomalyDetectionTs <- function(x, max_anoms = 0.10, direction = 'pos',
       stop("data must be a 2 column data.frame, with the first column being a set of timestamps, and the second coloumn being numeric values.")
     }
     # Format timestamps if necessary
-    if (!(class(x[[1]])[1] == "POSIXlt")) {
+    if (!(class(x[[1]])[1] == "POSIXCT")) {
       x <- format_timestamp(x)
     }
   }
@@ -316,13 +316,13 @@ AnomalyDetectionTs <- function(x, max_anoms = 0.10, direction = 'pos',
       week_rng = get_range(x_subset_week, index=2, y_log=y_log)
       day_rng = get_range(x_subset_single_day, index=2, y_log=y_log)
       yrange = c(min(week_rng[1],day_rng[1]), max(week_rng[2],day_rng[2]))
-      xgraph <- add_day_labels_datetime(xgraph, breaks=breaks, start=as.POSIXlt(min(x_subset_week[[1]]), tz="UTC"), end=as.POSIXlt(max(x_subset_single_day[[1]]), tz="UTC"), days_per_line=num_days_per_line)
+      xgraph <- add_day_labels_datetime(xgraph, breaks=breaks, start=as.POSIXct(min(x_subset_week[[1]]), tz="UTC"), end=as.POSIXct(max(x_subset_single_day[[1]]), tz="UTC"), days_per_line=num_days_per_line)
       xgraph <- xgraph + ggplot2::labs(x=xlabel, y=ylabel, title=plot_title)
     }else{
       xgraph <- ggplot2::ggplot(x, ggplot2::aes_string(x="timestamp", y="count")) + ggplot2::theme_bw() + ggplot2::theme(panel.grid.major = ggplot2::element_line(colour = "gray60"), panel.grid.major.y = ggplot2::element_blank(), panel.grid.minor = ggplot2::element_blank(), text=ggplot2::element_text(size = 14))
       xgraph <- xgraph + ggplot2::geom_line(data=x, ggplot2::aes_string(colour=color_name), alpha=alpha)
       yrange <- get_range(x, index=2, y_log=y_log)
-      xgraph <- xgraph + ggplot2::scale_x_datetime(labels=function(x) ifelse(as.POSIXlt(x, tz="UTC")$hour != 0,strftime(x, format="%kh", tz="UTC"), strftime(x, format="%b %e", tz="UTC")),
+      xgraph <- xgraph + ggplot2::scale_x_datetime(labels=function(x) ifelse(as.POSIXct(x, tz="UTC")$hour != 0,strftime(x, format="%kh", tz="UTC"), strftime(x, format="%b %e", tz="UTC")),
                                                   expand=c(0,0))
       xgraph <- xgraph + ggplot2::labs(x=xlabel, y=ylabel, title=plot_title)
     }
@@ -345,15 +345,15 @@ AnomalyDetectionTs <- function(x, max_anoms = 0.10, direction = 'pos',
   # Store expected values if set by user
   if(e_value) {
     anoms <- data.frame(timestamp=all_anoms[[1]], anoms=all_anoms[[2]], 
-                        expected_value=subset(seasonal_plus_trend[[2]], as.POSIXlt(seasonal_plus_trend[[1]], tz="UTC") %in% all_anoms[[1]]),
+                        expected_value=subset(seasonal_plus_trend[[2]], as.POSIXct(seasonal_plus_trend[[1]], tz="UTC") %in% all_anoms[[1]]),
                         stringsAsFactors=FALSE)
   } else {
     anoms <- data.frame(timestamp=all_anoms[[1]], anoms=all_anoms[[2]], stringsAsFactors=FALSE)
   }
 
-  # Make sure we're still a valid POSIXlt datetime.
+  # Make sure we're still a valid POSIXct datetime.
   # TODO: Make sure we keep original datetime format and timezone.
-  anoms$timestamp <- as.POSIXlt(anoms$timestamp, tz="UTC")
+  anoms$timestamp <- as.POSIXct(anoms$timestamp, tz="UTC")
 
   # Lastly, return anoms and optionally the plot if requested by the user
   if(plot){
