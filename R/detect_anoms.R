@@ -28,7 +28,7 @@ detect_anoms <- function(data, k = 0.49, alpha = 0.05, num_obs_per_period = NULL
     }
 
     # Check if our timestamps are posix
-    posix_timestamp <- if (class(data[[1L]])[1L] == "POSIXlt") TRUE else FALSE
+    posix_timestamp <- if (class(data[[1L]])[1L] == "POSIXct") TRUE else FALSE
 
     # Handle NAs
     if (length(rle(is.na(c(NA,data[[2L]],NA)))$values)>3){
@@ -63,7 +63,7 @@ detect_anoms <- function(data, k = 0.49, alpha = 0.05, num_obs_per_period = NULL
     ## Define values and vectors.
     n <- length(data[[2L]])
     if (posix_timestamp){
-        R_idx <- as.POSIXlt(data[[1L]][1L:max_outliers], tz = "UTC")
+        R_idx <- as.POSIXct(data[[1L]][1L:max_outliers], tz = "UTC")
     } else {
         R_idx <- 1L:max_outliers
     }
